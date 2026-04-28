@@ -11,7 +11,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
+    <link rel="icon" href="https://abikesa.github.io/favicon/assets/favicon-light.ico" />
+    <link rel="icon" href="https://abikesa.github.io/favicon/assets/favicon-dark.ico"
+          media="(prefers-color-scheme: dark)" />
+    <link rel="preload" href="https://abikesa.github.io/logos/assets/ukubona-light.png" as="image" />
+    <link rel="preload" href="https://abikesa.github.io/logos/assets/ukubona-dark.png" as="image" />
+
+  <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
@@ -148,12 +154,26 @@
     pointer-events: none;
   }
 
+  /*
+   * FIX: wrap wordmark + subtitle in a flex-column block.
+   * The old code had .loader-sub with margin-top: -1.4rem which
+   * pulled it up into the wordmark text. Now they live in a
+   * shared container with a positive gap — clean separation.
+   */
+  .loader-wordmark-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
   .loader-wordmark {
     font-family: 'DM Serif Display', Georgia, serif;
     font-size: 2.8rem;
     font-weight: 400;
     color: var(--ink);
     letter-spacing: -0.01em;
+    line-height: 1;
   }
   .loader-wordmark em {
     font-style: italic;
@@ -166,7 +186,8 @@
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--ink4);
-    margin-top: -1.4rem;
+    line-height: 1;
+    /* no negative margin — subtitle sits cleanly below wordmark */
   }
 
   /* animated progress track */
@@ -226,7 +247,7 @@
     background: var(--paper);
   }
 
-  /* ── RESPONSIVE: hide some bar items on small screens ── */
+  /* ── RESPONSIVE ── */
   @media (max-width: 540px) {
     .bar-status, .bar-sep { display: none; }
     .bar-tag { font-size: 9px; letter-spacing: 0.08em; }
@@ -251,7 +272,7 @@
 
 <!-- LOADING SCREEN -->
 <div id="loader">
-  <div>
+  <div class="loader-wordmark-block">
     <div class="loader-wordmark">Uku<em>bona</em></div>
     <div class="loader-sub">National Planning Authority · Uganda</div>
   </div>
@@ -281,7 +302,6 @@
   const dot    = document.getElementById('status-dot');
   const status = document.getElementById('status-text');
 
-  // Minimum loader display of 1.4s so the animation completes gracefully
   let frameReady = false;
   let minTimeDone = false;
 
@@ -300,13 +320,13 @@
     tryHideLoader();
   });
 
-  // Fallback — if iframe never fires load (cross-origin), hide after 6s
+  // Fallback — hide after 6s if iframe never fires load (cross-origin)
   setTimeout(() => {
     frameReady = true;
     tryHideLoader();
   }, 6000);
 
-  // Status dot: turn amber while waiting
+  // Turn amber while still waiting
   setTimeout(() => {
     if (!frameReady) {
       dot.style.background = '#f39c12';
